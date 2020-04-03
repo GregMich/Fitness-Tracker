@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Fitness_Tracker.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fitness_Tracker
 {
@@ -26,6 +28,12 @@ namespace Fitness_Tracker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var dbConnection = Configuration
+                .GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<ApplicationDbContext>(
+                options => options.UseSqlServer(dbConnection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
