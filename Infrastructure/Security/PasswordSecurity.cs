@@ -12,8 +12,6 @@ namespace Fitness_Tracker.Infrastructure.PasswordSecurity
         // private const int SaltByteSize = 128 /;
         public static string HashPassword(string plaintextPassword) =>
             BCrypt.Net.BCrypt.HashPassword(plaintextPassword);
-        public static string HashEmail(string plaintextEmail) =>
-            BCrypt.Net.BCrypt.HashString(plaintextEmail);
 
         public static bool CompareHashedPasswords(string suppliedPlaintextPassword, string hashedPassword) =>
             BCrypt.Net.BCrypt.Verify(suppliedPlaintextPassword, hashedPassword);
