@@ -57,7 +57,7 @@ namespace Fitness_Tracker.Data.Startup
 
                 using (var context = services.GetRequiredService<ApplicationDbContext>())
                 {
-                    if(!context.Users.Any())
+                    if(!context.Users.Any() && environment.IsDevelopment())
                     {
                         var seededUsers = new List<User>
                         {
