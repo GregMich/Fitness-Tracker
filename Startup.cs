@@ -67,6 +67,8 @@ namespace Fitness_Tracker
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
