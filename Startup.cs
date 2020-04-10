@@ -21,12 +21,16 @@ namespace Fitness_Tracker
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(
+            IConfiguration configuration,
+            ILoggerFactory loggerFactory)
+            {
+                Configuration = configuration;
+                _logger = loggerFactory.CreateLogger<Startup>();
+            }
 
         public IConfiguration Configuration { get; }
+        ILogger _logger;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -66,6 +70,8 @@ namespace Fitness_Tracker
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
