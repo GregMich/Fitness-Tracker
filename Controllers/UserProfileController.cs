@@ -23,37 +23,36 @@ namespace Fitness_Tracker.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly ILogger<UserProfileController> _logger;
-        private readonly JsonSerializerOptions jsonSerializerOptions;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly IClaimsManager _claimsManager;
 
         public UserProfileController(
             ApplicationDbContext context,
-            ILogger<UserProfileController> logger)
+            ILogger<UserProfileController> logger,
+            IClaimsManager claimsManager)
         {
             _context = context;
             _logger = logger;
-            jsonSerializerOptions = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-
+            _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
+            _claimsManager = claimsManager;
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetJwtPayload()
+        public async Task<IActionResult> GetUserProfile()
         {
-            var claimsManager = new ClaimsManager(HttpContext.User);
+            _claimsManager.Init(HttpContext.User);
             _logger.LogInformation(
-                $"User with id: {claimsManager.GetUserIdClaim()} attempting to access user profile");
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access user profile");
 
             var userProfile = await _context
                 .Users
                 .GetUserProfile()
-                .Where(_ => _.UserId == claimsManager.GetUserIdClaim())
+                .Where(_ => _.UserId == _claimsManager.GetUserIdClaim())
                 .FirstOrDefaultAsync();
 
             _logger.LogInformation(
-                $"User Profile:\n{JsonSerializer.Serialize(userProfile, jsonSerializerOptions)}");
+                $"User Profile:\n{JsonSerializer.Serialize(userProfile, _jsonSerializerOptions)}");
 
             return Ok(userProfile);
         }

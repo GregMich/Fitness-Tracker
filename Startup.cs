@@ -16,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Fitness_Tracker.Infrastructure.Security;
 
 namespace Fitness_Tracker
 {
@@ -36,6 +37,10 @@ namespace Fitness_Tracker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // used for processing jwt claims in controllers in order to obtain data transferred
+            // from JWT to controller
+            services.AddTransient<IClaimsManager, ClaimsManager>();
 
             var dbConnection = Configuration
                 .GetConnectionString("DefaultConnection");

@@ -5,18 +5,31 @@ using System.Threading.Tasks;
 
 namespace Fitness_Tracker.Infrastructure.Security
 {
-    public class ClaimsManager
+    public class ClaimsManager: IClaimsManager
     {
-        private readonly Dictionary<string, string> _claimsDict;
+        private Dictionary<string, string> _claimsDict;
+        private bool isInitialized = false;
 
-        public ClaimsManager(System.Security.Claims.ClaimsPrincipal user)
+        public ClaimsManager()
         {
             _claimsDict = new Dictionary<string, string>();
-
-            user.Claims.ToList()
-                .ForEach(_ => _claimsDict.Add(_.Type, _.Value));
         }
 
-        public int GetUserIdClaim() => int.Parse(_claimsDict["UserId"]);
+        // the constructor is accessed before a user claim can be supplied because the claims
+        // manager is injected by the service provider. For this reason I used a seperate 
+        // method to set the object state with a claims principal object
+        public void Init(System.Security.Claims.ClaimsPrincipal user)
+        {
+            user.Claims.ToList()
+                .ForEach(_ => _claimsDict.Add(_.Type, _.Value));
+
+            isInitialized = true;
+        }
+
+        public int GetUserIdClaim() =>
+           isInitialized
+            ? int.Parse(_claimsDict["UserId"])
+            : throw new InvalidOperationException(
+                "The claims manager was not initialized with a user claims principal");
     }
 }

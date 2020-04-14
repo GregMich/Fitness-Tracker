@@ -64,9 +64,9 @@ namespace Fitness_Tracker.Data.Startup
                             new User
                             {
                                 FirstName = "Greg",
-                                LastName = "Mich",
-                                Username = "gmich",
-                                Email = "gregmich95@gmail.com",
+                                LastName = "Michael",
+                                Username = "gmichael",
+                                Email = "gmichael@gmail.com",
                                 BirthDate = new DateTime(1995, 9, 15),
                                 PasswordHash = PasswordSecurity.HashPassword("secret")
                             },
