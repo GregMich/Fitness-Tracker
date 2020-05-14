@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Fitness_Tracker.Data.Startup;
+using Microsoft.Extensions.Logging;
 
 namespace Fitness_Tracker
 {
@@ -9,6 +10,10 @@ namespace Fitness_Tracker
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.AddConsole();
+                })
             .Build()
             .MigrateDatabase()
             .SeedDatabase()

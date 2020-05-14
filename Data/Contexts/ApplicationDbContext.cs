@@ -21,6 +21,9 @@ namespace Fitness_Tracker.Data.Contexts
         {
             modelBuilder.ApplyConfiguration(new SetEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new StatsEntityConfiguration());
         }
+
+        public DbSet<Fitness_Tracker.Data.Entities.Stats> Stats { get; set; }
     }
 }

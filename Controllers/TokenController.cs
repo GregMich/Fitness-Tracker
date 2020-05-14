@@ -13,7 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Fitness_Tracker.Data.Contexts;
 using Fitness_Tracker.Infrastructure.PasswordSecurity;
-
+using Microsoft.AspNetCore.Cors;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Fitness_Tracker.Controllers
 {
@@ -42,10 +43,12 @@ namespace Fitness_Tracker.Controllers
          * for any REST api endpoint. The JWT will also include information in its payload that
          * allows access to certain resources.
          */
+        [EnableCors]
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateToken([FromBody]LoginModel login)
         {
+            _logger.LogInformation($"Attempting to login with username: {login.Email}");
             var user = await Authenticate(login);
 
             if (user.IsAuthenticated)
@@ -70,12 +73,13 @@ namespace Fitness_Tracker.Controllers
             var claims = new List<Claim>
             {
                 new Claim("Email", user.Email),
-                new Claim("UserId", user.Id.ToString())
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("Subject", user.Id.ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
-              expires: DateTime.Now.AddMinutes(480),
+              expires: DateTime.Now.AddMinutes(1),
               signingCredentials: creds,
               claims: claims);
 

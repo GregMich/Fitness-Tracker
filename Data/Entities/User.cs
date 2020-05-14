@@ -16,5 +16,6 @@ namespace Fitness_Tracker.Data.Entities
         // entity relationships
         public List<ResistanceTrainingSession> ResistanceTrainingSessions { get; set; }
         public List<CardioSession> CardioSessions { get; set; }
+        public Stats Stats { get; set; }
     }
 }
