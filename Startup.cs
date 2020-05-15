@@ -58,6 +58,7 @@ namespace Fitness_Tracker
                         .Converters.Add(new JsonStringEnumConverter());
                     });
 
+
             // used for processing jwt claims in controllers in order to obtain data transferred
             // from JWT to controller
             services.AddTransient<IClaimsManager, ClaimsManager>();
