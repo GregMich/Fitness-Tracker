@@ -17,11 +17,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Fitness_Tracker.Infrastructure.Security;
+using System.Text.Json.Serialization;
 
 namespace Fitness_Tracker
 {
     public class Startup
     {
+        readonly string AllowSpecificOrigins = "_allowSpecificOrigins";
+
         public Startup(
             IConfiguration configuration,
             ILoggerFactory loggerFactory)
@@ -36,7 +39,25 @@ namespace Fitness_Tracker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin();
+                                      builder.AllowAnyMethod();
+                                      builder.AllowAnyHeader();
+                                  });
+            });
+
+            services.AddControllers()
+                .AddJsonOptions(opts =>
+                    {
+                        opts
+                        .JsonSerializerOptions
+                        .Converters.Add(new JsonStringEnumConverter());
+                    });
+
 
             // used for processing jwt claims in controllers in order to obtain data transferred
             // from JWT to controller
@@ -62,6 +83,7 @@ namespace Fitness_Tracker
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,6 +101,8 @@ namespace Fitness_Tracker
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors(AllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {

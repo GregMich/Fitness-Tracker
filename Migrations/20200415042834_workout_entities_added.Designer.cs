@@ -4,14 +4,16 @@ using Fitness_Tracker.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitness_Tracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200415042834_workout_entities_added")]
+    partial class workout_entities_added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,43 +114,6 @@ namespace Fitness_Tracker.Migrations
                     b.ToTable("Set");
                 });
 
-            modelBuilder.Entity("Fitness_Tracker.Data.Entities.Stats", b =>
-                {
-                    b.Property<int>("StatsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("BodyfatPercentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("HeightFeet")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HeightInch")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("WeightUnit")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("StatsId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Stats");
-                });
-
             modelBuilder.Entity("Fitness_Tracker.Data.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -211,15 +176,6 @@ namespace Fitness_Tracker.Migrations
                     b.HasOne("Fitness_Tracker.Data.Entities.Excercise", "Excercise")
                         .WithMany("Sets")
                         .HasForeignKey("ExcerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Fitness_Tracker.Data.Entities.Stats", b =>
-                {
-                    b.HasOne("Fitness_Tracker.Data.Entities.User", "User")
-                        .WithOne("Stats")
-                        .HasForeignKey("Fitness_Tracker.Data.Entities.Stats", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

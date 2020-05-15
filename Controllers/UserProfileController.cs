@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +6,9 @@ using Fitness_Tracker.Data.Contexts;
 using Microsoft.AspNetCore.Authorization;
 using Fitness_Tracker.Infrastructure.Security;
 using Fitness_Tracker.Data.QueryObjects;
-using Fitness_Tracker.Data.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Fitness_Tracker.Controllers
 {

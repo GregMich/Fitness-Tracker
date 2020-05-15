@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fitness_Tracker.Data.Entities
 {
@@ -14,5 +12,10 @@ namespace Fitness_Tracker.Data.Entities
         public string Email { get; set; }
         public DateTime BirthDate { get; set; }
         public string PasswordHash { get; set; }
+
+        // entity relationships
+        public List<ResistanceTrainingSession> ResistanceTrainingSessions { get; set; }
+        public List<CardioSession> CardioSessions { get; set; }
+        public Stats Stats { get; set; }
     }
 }
