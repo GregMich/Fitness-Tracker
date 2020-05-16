@@ -8,49 +8,87 @@ using Microsoft.EntityFrameworkCore;
 using Fitness_Tracker.Data.Contexts;
 using Fitness_Tracker.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Fitness_Tracker.Infrastructure.Security;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Fitness_Tracker.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User/{UserId}/[controller]")]
     [ApiController]
     public class StatsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IClaimsManager _claimsManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly ILogger<StatsController> _logger;
 
-        public StatsController(ApplicationDbContext context)
+        public StatsController(ApplicationDbContext context,
+            IClaimsManager claimsManager,
+            ILogger<StatsController> logger)
         {
             _context = context;
+            _claimsManager = claimsManager;
+            _logger = logger;
+            _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
         }
 
-        //// GET: api/Stats
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Stats>>> GetStats()
-        //{
-        //    return await _context.Stats.ToListAsync();
-        //}
-
-        // GET: api/Stats/5
-        [HttpGet("{id}")]
+        // GET: api/Stats/
+        // TODO verify that the users id matches that of the stats that they are requesting by inspecing
+        // the JWT that is sent from the request (can be access by using the claims manager service)
         [Authorize]
-        public async Task<ActionResult<Stats>> GetStats(int id)
+        public async Task<ActionResult<Stats>> GetStats([FromRoute]int userId)
         {
+            _claimsManager.Init(HttpContext.User);
+            _logger.LogInformation(
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access stats for userId: {userId}");
+
+            if (userId != _claimsManager.GetUserIdClaim())
+            {
+                _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                return Forbid();
+            }
+
             var stats = await _context
                 .Stats
-                .Where(_ => _.StatsId == id)
+                .Where(_ => _.UserId == userId)
                 .FirstOrDefaultAsync();
 
             if (stats == null)
             {
+                _logger.LogInformation("No existing stats for this user could be found");
                 return NotFound();
             }
 
+            _logger.LogInformation(
+                $"Queried Stats:\n{JsonSerializer.Serialize(stats, _jsonSerializerOptions)}");
             return stats;
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateStats(Stats newStats)
+        public async Task<IActionResult> CreateStats([FromRoute]int userId, Stats newStats)
         {
+
+            _claimsManager.Init(HttpContext.User);
+            _logger.LogInformation(
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to create stats for userId: {userId}");
+
+            if (userId != _claimsManager.GetUserIdClaim())
+            {
+                _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                return Forbid();
+            }
+
+            if (await _context
+                .Stats
+                .Where(_ => _.UserId == _claimsManager.GetUserIdClaim())
+                .AnyAsync())
+            {
+                _logger.LogInformation($"Stats already exist for this user");
+                return BadRequest();
+            }
+
             await _context
                 .Stats
                 .AddAsync(newStats);
@@ -65,45 +103,47 @@ namespace Fitness_Tracker.Controllers
         //// more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutStats(int id, Stats stats)
+        public async Task<IActionResult> PutStats([FromRoute]int userId, int id, Stats stats)
         {
+
+            _claimsManager.Init(HttpContext.User);
+            _logger.LogInformation(
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to update stats resource with" +
+                $" statsId: {stats.StatsId} for stats with userId: {stats.UserId}");
+
+            if (userId != _claimsManager.GetUserIdClaim())
+            {
+                _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                return Forbid();
+            }
+
             if (id != stats.StatsId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(stats).State = EntityState.Modified;
+            var existingStats = await _context
+                .Stats
+                .Where(_ => _.UserId == userId)
+                .FirstOrDefaultAsync();
 
-            try
+            if (existingStats != null)
             {
+                existingStats.Weight = stats.Weight;
+                existingStats.HeightFeet = stats.HeightFeet;
+                existingStats.HeightInch = stats.HeightInch;
+                existingStats.Age = stats.Age;
+                existingStats.BodyfatPercentage = stats.BodyfatPercentage;
+                existingStats.WeightUnit = stats.WeightUnit;
+
                 await _context.SaveChangesAsync();
+                return Ok(stats);
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!StatsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
-
-            return Ok(stats);
         }
-
-        //// POST: api/Stats
-        //// To protect from overposting attacks, enable the specific properties you want to bind to, for
-        //// more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //[HttpPost]
-        //public async Task<ActionResult<Stats>> PostStats(Stats stats)
-        //{
-        //    _context.Stats.Add(stats);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetStats", new { id = stats.StatsId }, stats);
-        //}
 
         //// DELETE: api/Stats/5
         //[HttpDelete("{id}")]
@@ -120,12 +160,5 @@ namespace Fitness_Tracker.Controllers
 
         //    return stats;
         //}
-
-        private bool StatsExists(int id)
-        {
-            return _context
-                .Stats
-                .Any(e => e.StatsId == id);
-        }
     }
 }
