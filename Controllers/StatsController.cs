@@ -63,7 +63,7 @@ namespace Fitness_Tracker.Controllers
 
             _logger.LogInformation(
                 $"Queried Stats:\n{JsonSerializer.Serialize(stats, _jsonSerializerOptions)}");
-            return stats;
+            return Ok(stats);
         }
 
         [HttpPost]
