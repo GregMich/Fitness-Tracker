@@ -99,11 +99,11 @@ namespace Fitness_Tracker
 
             app.UseRouting();
 
+            app.UseCors(AllowSpecificOrigins);
+
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseCors(AllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {

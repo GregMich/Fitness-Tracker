@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Fitness_Tracker.Infrastructure.Security;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Microsoft.AspNetCore.Cors;
 
 namespace Fitness_Tracker.Controllers
 {
@@ -86,7 +87,7 @@ namespace Fitness_Tracker.Controllers
                 .AnyAsync())
             {
                 _logger.LogInformation($"Stats already exist for this user");
-                return BadRequest();
+                return BadRequest("Stats already exist for this user");
             }
 
             await _context
@@ -95,7 +96,7 @@ namespace Fitness_Tracker.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetStats", new { id = newStats.StatsId }, newStats);
+            return CreatedAtAction(nameof(GetStats), new { userId = _claimsManager.GetUserIdClaim() }, newStats);
         }
 
         //// PUT: api/Stats/5
