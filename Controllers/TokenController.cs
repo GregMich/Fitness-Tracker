@@ -81,7 +81,7 @@ namespace Fitness_Tracker.Controllers
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
               // TODO change this after testing is completed
-              expires: DateTime.Now.AddSeconds(20),
+              expires: DateTime.Now.AddDays(7),
               signingCredentials: creds,
               claims: claims);
 
