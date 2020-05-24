@@ -62,11 +62,12 @@ namespace Fitness_Tracker.Controllers
 
         private string BuildToken(UserModel user, ICollection<string> roles)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _config["Jwt:Key"]));
+            var key = Encoding.ASCII.GetBytes(
+                    _config["Jwt:Key"]);
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(
+                new SymmetricSecurityKey(key), 
+                SecurityAlgorithms.HmacSha256Signature);
 
             // Additional claims can be added here which will then be reflected in the JWT payload as needed
             // this will be useful for including information that grants access to certain resources
@@ -79,7 +80,8 @@ namespace Fitness_Tracker.Controllers
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
-              expires: DateTime.Now.AddMinutes(480),
+              // TODO change this after testing is completed
+              expires: DateTime.Now.AddDays(7),
               signingCredentials: creds,
               claims: claims);
 

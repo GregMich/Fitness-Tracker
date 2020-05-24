@@ -81,6 +81,7 @@ namespace Fitness_Tracker
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Issuer"],
+                        ClockSkew = TimeSpan.Zero,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
@@ -99,11 +100,11 @@ namespace Fitness_Tracker
 
             app.UseRouting();
 
+            app.UseCors(AllowSpecificOrigins);
+
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseCors(AllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {
