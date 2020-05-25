@@ -31,5 +31,12 @@ namespace Fitness_Tracker.Infrastructure.Security
             ? int.Parse(_claimsDict["UserId"])
             : throw new InvalidOperationException(
                 "The claims manager was not initialized with a user claims principal");
+
+        // verify that the supplied userId matches the userId in the JWT
+        public bool VerifyUserId(int userId) =>
+            isInitialized
+            ? this.GetUserIdClaim() == userId
+            : throw new InvalidOperationException(
+                "The claims manager was not initialized with a user claims principal");
     }
 }
