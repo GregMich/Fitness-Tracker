@@ -14,7 +14,7 @@ namespace Fitness_Tracker.Data.QueryObjects
             this IQueryable<User> user) =>
             user
             .Select(_ => _.ResistanceTrainingSessions
-            .Select(rts => new ResistanceTrainingSessionDTO
+             .Select(rts => new ResistanceTrainingSessionDTO
             {
                 UserId = rts.UserId,
                 ResistanceTrainingSessionId = rts.ResistanceTrainingSessionId,

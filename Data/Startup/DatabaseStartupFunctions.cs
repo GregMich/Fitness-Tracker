@@ -192,6 +192,118 @@ namespace Fitness_Tracker.Data.Startup
                                                 }
                                             }
                                         }
+                                    },
+                                    new ResistanceTrainingSession
+                                    {
+                                        TrainingSessionDate = new DateTime(year: 2020, month: 5, day: 20),
+                                        Excercises = new List<Excercise>
+                                        {
+                                            new Excercise
+                                            {
+                                                ExcerciseName = "Bench Press",
+                                                Sets = new List<Set>
+                                                {
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 225,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 220,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 215,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 210,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    }
+                                                }
+                                            },
+                                            new Excercise
+                                            {
+                                                ExcerciseName = "Squat",
+                                                Sets = new List<Set>
+                                                {
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 315,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 8
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 305,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 8
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 295,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 8
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 270,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 8
+                                                    },
+                                                }
+                                            },
+                                            new Excercise
+                                            {
+                                                ExcerciseName = "Row",
+                                                Sets = new List<Set>
+                                                {
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 155,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 145,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 135,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                    new Set
+                                                    {
+                                                        Reps = 8,
+                                                        Weight = 135,
+                                                        WeightUnit = WeightUnit.Pounds,
+                                                        RateOfPercievedExertion = 9
+                                                    },
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             },

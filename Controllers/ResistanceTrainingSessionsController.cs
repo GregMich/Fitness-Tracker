@@ -54,6 +54,9 @@ namespace Fitness_Tracker.Controllers
                 .GetResistanceTrainingSessions()
                 .FirstOrDefaultAsync();
 
+
+            _logger.LogInformation(
+                $"Queried Resistance Training Sessions:\n{JsonSerializer.Serialize(trainingSessions, _jsonSerializerOptions)}");
             return Ok(trainingSessions);
         }
 
