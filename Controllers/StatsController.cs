@@ -34,9 +34,6 @@ namespace Fitness_Tracker.Controllers
             _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true };
         }
 
-        // GET: api/Stats/
-        // TODO verify that the users id matches that of the stats that they are requesting by inspecing
-        // the JWT that is sent from the request (can be access by using the claims manager service)
         [HttpGet]
         [Authorize]
         public async Task<ActionResult<Stats>> GetStats([FromRoute]int userId)

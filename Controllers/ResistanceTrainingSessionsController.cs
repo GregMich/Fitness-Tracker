@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Fitness_Tracker.Data.QueryObjects;
 using Microsoft.EntityFrameworkCore;
+using Fitness_Tracker.Data.Entities;
 
 namespace Fitness_Tracker.Controllers
 {
@@ -60,17 +61,72 @@ namespace Fitness_Tracker.Controllers
             return Ok(trainingSessions);
         }
 
-        // GET api/<controller>/5
-        [HttpGet("{id}")]
-        public string Get([FromRoute]int userId, [FromRoute]int resistanceTrainingSessionId)
+        [HttpGet("{resistanceTrainingSessionId}")]
+        [Authorize]
+        public async Task<IActionResult> Get([FromRoute]int userId, int resistanceTrainingSessionId)
         {
-            return "value";
+            _claimsManager.Init(HttpContext.User);
+            _logger.LogInformation(
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access " +
+                $"training session for userId: {userId} with id: {resistanceTrainingSessionId}");
+
+            if (!_claimsManager.VerifyUserId(userId))
+            {
+                _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                return Forbid();
+            }
+
+            var trainingSession = await _context
+                .ResistanceTrainingSessions
+                .GetResistanceTrainingSessionById(
+                    resistanceTrainingSessionId, 
+                    _claimsManager.GetUserIdClaim())
+                .FirstOrDefaultAsync();
+
+            return Ok(trainingSession);
         }
 
-        // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        [Authorize]
+        public async Task<IActionResult> Post([FromRoute]int userId, [FromBody]ResistanceTrainingSession newResistanceTrainingSession)
         {
+            if (ModelState.IsValid)
+            {
+                _claimsManager.Init(HttpContext.User);
+                _logger.LogInformation(
+                    $"User with id: {_claimsManager.GetUserIdClaim()} attempting to create resistanceTrainingSession for userId: {userId}");
+
+                if (userId != _claimsManager.GetUserIdClaim())
+                {
+                    _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                    return Forbid();
+                }
+
+                if (await _context
+                    .ResistanceTrainingSessions
+                    .Where(_ => _.ResistanceTrainingSessionId == newResistanceTrainingSession.ResistanceTrainingSessionId)
+                    .AnyAsync())
+                {
+                    _logger.LogInformation($"resistance already exist for this user");
+                    return BadRequest("Stats already exist for this user");
+                }
+
+                await _context
+                    .ResistanceTrainingSessions
+                    .AddAsync(newResistanceTrainingSession);
+
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(
+                    nameof(Get), new
+                    {
+                        userId = _claimsManager.GetUserIdClaim(),
+                        resistanceTrainingSessionId = newResistanceTrainingSession.ResistanceTrainingSessionId
+                    },
+                    newResistanceTrainingSession);
+            }
+
+            return BadRequest(ModelState);
         }
 
         // PUT api/<controller>/5

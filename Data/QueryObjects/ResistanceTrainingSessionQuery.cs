@@ -37,5 +37,35 @@ namespace Fitness_Tracker.Data.QueryObjects
                         }).ToList()
                 }).ToList()
             }));
+
+        public static IQueryable<ResistanceTrainingSessionDTO> GetResistanceTrainingSessionById(
+            this IQueryable<ResistanceTrainingSession> resistanceTrainingSessions, int resistanceTrainingId, int userId) =>
+            resistanceTrainingSessions
+            .Where(rts =>
+             rts.ResistanceTrainingSessionId == resistanceTrainingId
+             && rts.UserId == userId)
+            .Select(rts => new ResistanceTrainingSessionDTO
+            {
+                UserId = rts.UserId,
+                ResistanceTrainingSessionId = rts.ResistanceTrainingSessionId,
+                TrainingSessionDate = rts.TrainingSessionDate,
+                Excercises = rts.Excercises
+                .Select(ex => new ExcerciseDTO
+                {
+                    ExcerciseId = ex.ExcerciseId,
+                    ExcerciseName = ex.ExcerciseName,
+                    ResistanceTrainingSessionId = ex.ResistanceTrainingSessionId,
+                    Sets = ex.Sets
+                        .Select(s => new SetDTO
+                        {
+                            SetId = s.SetId,
+                            Reps = s.Reps,
+                            Weight = s.Weight,
+                            WeightUnit = s.WeightUnit,
+                            RateOfPercievedExertion = s.RateOfPercievedExertion,
+                            ExcerciseId = s.ExcerciseId
+                        }).ToList()
+                }).ToList()
+            });
     }
 }
