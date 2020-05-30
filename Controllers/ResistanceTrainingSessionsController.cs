@@ -52,7 +52,7 @@ namespace Fitness_Tracker.Controllers
             var trainingSessions = await _context
                 .Users
                 .Where(_ => _.UserId == userId)
-                .GetResistanceTrainingSessions()
+                .GetResistanceTrainingSessionsDTOs()
                 .FirstOrDefaultAsync();
 
 
@@ -78,7 +78,7 @@ namespace Fitness_Tracker.Controllers
 
             var trainingSession = await _context
                 .ResistanceTrainingSessions
-                .GetResistanceTrainingSessionById(
+                .GetResistanceTrainingSessionDTOById(
                     resistanceTrainingSessionId, 
                     _claimsManager.GetUserIdClaim())
                 .FirstOrDefaultAsync();
@@ -135,10 +135,39 @@ namespace Fitness_Tracker.Controllers
         {
         }
 
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{resistanceTrainingSessionId}")]
+        public async Task<IActionResult> Delete([FromRoute]int userId, int resistanceTrainingSessionId)
         {
+            _claimsManager.Init(HttpContext.User);
+            _logger.LogInformation(
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to delete resistanceTrainingSession for userId: {userId}");
+
+            if (!_claimsManager.VerifyUserId(userId))
+            {
+                _logger.LogInformation($"User with id: {_claimsManager.GetUserIdClaim()} was denied access to this resource");
+                return Forbid();
+            }
+
+            var existingResistanceTrainingSession = await _context
+                .ResistanceTrainingSessions
+                .GetResistanceTrainingSessionByIdForDeletion(
+                    resistanceTrainingSessionId, 
+                    _claimsManager.GetUserIdClaim())
+                .FirstOrDefaultAsync();
+
+            if (existingResistanceTrainingSession != null)
+            {
+                _logger.LogInformation($"A resistanceTrainingSession with id: {resistanceTrainingSessionId} was not found");
+                _context
+                    .ResistanceTrainingSessions
+                    .Remove(existingResistanceTrainingSession);
+
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            return NotFound();
         }
     }
 }

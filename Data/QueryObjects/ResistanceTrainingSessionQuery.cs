@@ -10,7 +10,7 @@ namespace Fitness_Tracker.Data.QueryObjects
 {
     public static class ResistanceTrainingSessionQuery
     {
-        public static IQueryable<IEnumerable<ResistanceTrainingSessionDTO>> GetResistanceTrainingSessions(
+        public static IQueryable<IEnumerable<ResistanceTrainingSessionDTO>> GetResistanceTrainingSessionsDTOs(
             this IQueryable<User> user) =>
             user
             .Select(_ => _.ResistanceTrainingSessions
@@ -38,7 +38,7 @@ namespace Fitness_Tracker.Data.QueryObjects
                 }).ToList()
             }));
 
-        public static IQueryable<ResistanceTrainingSessionDTO> GetResistanceTrainingSessionById(
+        public static IQueryable<ResistanceTrainingSessionDTO> GetResistanceTrainingSessionDTOById(
             this IQueryable<ResistanceTrainingSession> resistanceTrainingSessions, int resistanceTrainingId, int userId) =>
             resistanceTrainingSessions
             .Where(rts =>
@@ -67,5 +67,12 @@ namespace Fitness_Tracker.Data.QueryObjects
                         }).ToList()
                 }).ToList()
             });
+
+        public static IQueryable<ResistanceTrainingSession> GetResistanceTrainingSessionByIdForDeletion(
+            this IQueryable<ResistanceTrainingSession> resistanceTrainingSessions, int resistanceTrainingId, int userId) =>
+            resistanceTrainingSessions
+            .Where(rts =>
+             rts.ResistanceTrainingSessionId == resistanceTrainingId
+             && rts.UserId == userId);
     }
 }
