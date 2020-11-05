@@ -19,6 +19,7 @@ using System.Text;
 using Fitness_Tracker.Infrastructure.Security;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Newtonsoft.Json;
 
 namespace Fitness_Tracker
 {
@@ -52,11 +53,16 @@ namespace Fitness_Tracker
             });
 
             services.AddControllers()
-                .AddJsonOptions(opts =>
+                .AddNewtonsoftJson(opts =>
                     {
                         opts
-                        .JsonSerializerOptions
-                        .Converters.Add(new JsonStringEnumConverter());
+                         .SerializerSettings
+                         .Converters
+                         .Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
+                        opts
+                         .SerializerSettings
+                         .ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     });
 
 

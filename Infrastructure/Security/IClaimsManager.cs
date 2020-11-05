@@ -10,5 +10,7 @@ namespace Fitness_Tracker.Infrastructure.Security
         public int GetUserIdClaim();
 
         public void Init(System.Security.Claims.ClaimsPrincipal user);
+
+        public bool VerifyUserId(int userId);
     }
 }
