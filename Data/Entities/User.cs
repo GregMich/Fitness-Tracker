@@ -17,5 +17,6 @@ namespace Fitness_Tracker.Data.Entities
         public List<ResistanceTrainingSession> ResistanceTrainingSessions { get; set; }
         public List<CardioSession> CardioSessions { get; set; }
         public Stats Stats { get; set; }
+        public NutritionTarget NutritionTarget { get; set; }
     }
 }

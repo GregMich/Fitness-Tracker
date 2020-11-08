@@ -4,14 +4,16 @@ using Fitness_Tracker.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitness_Tracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201107235918_set_and_stats_ef_configuration_decimal_precision")]
+    partial class set_and_stats_ef_configuration_decimal_precision
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,8 +119,7 @@ namespace Fitness_Tracker.Migrations
 
                     b.HasKey("NutritionTargetId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("NutritionTargets");
                 });
@@ -279,8 +280,8 @@ namespace Fitness_Tracker.Migrations
             modelBuilder.Entity("Fitness_Tracker.Data.Entities.NutritionTarget", b =>
                 {
                     b.HasOne("Fitness_Tracker.Data.Entities.User", "User")
-                        .WithOne("NutritionTarget")
-                        .HasForeignKey("Fitness_Tracker.Data.Entities.NutritionTarget", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

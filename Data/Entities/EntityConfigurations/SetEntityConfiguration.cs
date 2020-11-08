@@ -10,6 +10,9 @@ namespace Fitness_Tracker.Data.Entities.EntityConfigurations
         {
             entity.Property(_ => _.WeightUnit)
                 .HasConversion(new EnumToStringConverter<WeightUnit>());
+
+            entity.Property(_ => _.Weight)
+                .HasColumnType("decimal(6,2)");
         }
     }
 }
