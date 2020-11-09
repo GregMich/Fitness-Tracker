@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Fitness_Tracker.Data.Entities;
+using Fitness_Tracker.Data.QueryObjects;
+using Fitness_Tracker.Data.DataTransferObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fitness_Tracker.Controllers
 {
@@ -34,9 +37,29 @@ namespace Fitness_Tracker.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get([FromRoute]int userId)
+        public async Task<IActionResult> Get(
+            [FromRoute]int userId, 
+            [FromQuery]int pageSize = 10, 
+            [FromQuery]int page = 0, 
+            [FromQuery]DailyNutritionLogSortingOption orderBy = DailyNutritionLogSortingOption.mostRecent)
         {
-            return Ok();
+            _claimsManager.Init(HttpContext.User);
+
+            if (!_claimsManager.VerifyUserId(userId))
+            {
+                _logger.LogInformation(
+                    $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access nutrition target for userId: {userId}");
+                return Forbid();
+            }
+
+            var dailyNutritionLogs = await _context
+                .DailyNutritionLogs
+                .Where(_ => _.UserId == userId)
+                .GetDailyNutritionLogDTOs()
+                .OrderDailyNutritionLogDTOsBy(orderBy)
+                .ToListAsync();
+
+            return Ok(dailyNutritionLogs);
         }
 
         [HttpGet("{dailyNutritionLogId}")]
