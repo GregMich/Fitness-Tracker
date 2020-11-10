@@ -4,14 +4,16 @@ using Fitness_Tracker.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fitness_Tracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201107234947_added_entities_for_nutrition_and_calorie_tracking")]
+    partial class added_entities_for_nutrition_and_calorie_tracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,8 +119,7 @@ namespace Fitness_Tracker.Migrations
 
                     b.HasKey("NutritionTargetId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("NutritionTargets");
                 });
@@ -160,7 +161,7 @@ namespace Fitness_Tracker.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(6,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("WeightUnit")
                         .IsRequired()
@@ -184,7 +185,7 @@ namespace Fitness_Tracker.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("BodyfatPercentage")
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("HeightFeet")
                         .HasColumnType("int");
@@ -196,7 +197,7 @@ namespace Fitness_Tracker.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(6,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("WeightUnit")
                         .IsRequired()
@@ -252,7 +253,7 @@ namespace Fitness_Tracker.Migrations
             modelBuilder.Entity("Fitness_Tracker.Data.Entities.DailyNutritionLog", b =>
                 {
                     b.HasOne("Fitness_Tracker.Data.Entities.User", "User")
-                        .WithMany("DailyNutritionLogs")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -279,8 +280,8 @@ namespace Fitness_Tracker.Migrations
             modelBuilder.Entity("Fitness_Tracker.Data.Entities.NutritionTarget", b =>
                 {
                     b.HasOne("Fitness_Tracker.Data.Entities.User", "User")
-                        .WithOne("NutritionTarget")
-                        .HasForeignKey("Fitness_Tracker.Data.Entities.NutritionTarget", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -41,7 +41,7 @@ namespace Fitness_Tracker.Controllers
         {
             _claimsManager.Init(HttpContext.User);
             _logger.LogInformation(
-                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access stats for userId: {userId}");
+                $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access resistance training sessions for userId: {userId}");
 
             if (!_claimsManager.VerifyUserId(userId))
             {
@@ -130,6 +130,8 @@ namespace Fitness_Tracker.Controllers
         }
 
         // PUT api/<controller>/5
+        // TODO implement a PUT action by querying for an existing resistance training session and then applying changes located in the supplied model to the
+        // the existing resistance training session
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
         {
