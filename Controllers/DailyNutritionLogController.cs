@@ -66,14 +66,65 @@ namespace Fitness_Tracker.Controllers
         [Authorize]
         public async Task<IActionResult> Get([FromRoute]int userId, [FromRoute]int dailyNutritionLogId)
         {
+            _claimsManager.Init(HttpContext.User);
+
+            if (!_claimsManager.VerifyUserId(userId))
+            {
+                _logger.LogInformation(
+                    $"User with id: {_claimsManager.GetUserIdClaim()} attempting to access nutrition target for userId: {userId}");
+                return Forbid();
+            }
+
+            var dailyNutritionLog = await _context
+                .DailyNutritionLogs
+                .Where(_ => _.DailyNutritionLogId == dailyNutritionLogId)
+                .FirstOrDefaultAsync();
+
+            if (dailyNutritionLog == null || dailyNutritionLog?.UserId != _claimsManager.GetUserIdClaim())
+            {
+                return NotFound();
+            }
             return Ok();
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Post()
+        public async Task<IActionResult> Post([FromRoute]int userId, [FromBody]DailyNutritionLog newDailyNutritionLog)
         {
-            return Ok();
+            _claimsManager.Init(HttpContext.User);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("model state for new daily nutriton log was bad:");
+                _logger.LogInformation(JsonSerializer.Serialize(newDailyNutritionLog));
+                return BadRequest(ModelState);
+            }
+
+            if (!_claimsManager.VerifyUserId(userId) || !_claimsManager.VerifyUserId(newDailyNutritionLog.UserId))
+            {
+                return Forbid();
+            }
+
+            if (await _context
+                .DailyNutritionLogs
+                .Where(_ => _.DailyNutritionLogId == newDailyNutritionLog.DailyNutritionLogId)
+                .AnyAsync())
+                {
+                    return BadRequest("a daily nutrition log with that id already exists, if editing, use the PUT endpoint");
+                }
+
+            await _context
+                .DailyNutritionLogs
+                .AddAsync(newDailyNutritionLog);
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(
+                nameof(Get), 
+                new { 
+                    userId = _claimsManager.GetUserIdClaim(), 
+                    dailyNutritionLogId = newDailyNutritionLog.DailyNutritionLogId },
+                newDailyNutritionLog);
         }
 
         [HttpPut("{dailyNutritionLogId}")]

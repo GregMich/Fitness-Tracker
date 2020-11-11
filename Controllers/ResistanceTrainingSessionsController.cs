@@ -86,6 +86,7 @@ namespace Fitness_Tracker.Controllers
             return Ok(trainingSession);
         }
 
+        // TODO security needs to be fixed on this, the id of the model needs to be verified as well
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromRoute]int userId, [FromBody]ResistanceTrainingSession newResistanceTrainingSession)
@@ -118,7 +119,8 @@ namespace Fitness_Tracker.Controllers
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction(
-                    nameof(Get), new
+                    nameof(Get), 
+                    new
                     {
                         userId = _claimsManager.GetUserIdClaim(),
                         resistanceTrainingSessionId = newResistanceTrainingSession.ResistanceTrainingSessionId

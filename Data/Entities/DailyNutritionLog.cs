@@ -11,6 +11,6 @@ namespace Fitness_Tracker.Data.Entities
         public int UserId { get; set; }
         public User User { get; set; }
         public DateTime NutritionLogDate { get; set; }
-        public List<FoodEntry> FoodEntries { get; set; }
+        public IEnumerable<FoodEntry> FoodEntries { get; set; }
     }
 }

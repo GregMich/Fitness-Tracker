@@ -9,6 +9,6 @@ namespace Fitness_Tracker.Data.DataTransferObjects
         public int DailyNutritionLogId { get; set; }
         public int UserId { get; set; }
         public DateTime NutritionLogDate { get; set; }
-        public List<FoodEntryDTO> FoodEntries { get; set; }
+        public IEnumerable<FoodEntryDTO> FoodEntries { get; set; }
     }
 }
