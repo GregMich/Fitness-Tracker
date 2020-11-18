@@ -129,16 +129,70 @@ namespace Fitness_Tracker.Controllers
 
         [HttpPut("{dailyNutritionLogId}")]
         [Authorize]
-        public async Task<IActionResult> Put([FromRoute]int userId, [FromRoute]int dailyNutritionLogId)
+        public async Task<IActionResult> Put([FromRoute] int userId, [FromBody]DailyNutritionLog modifiedDailyNutritionLog)
         {
-            return Ok();
+            _claimsManager.Init(HttpContext.User);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("model state for new daily nutriton log was bad:");
+                _logger.LogInformation(JsonSerializer.Serialize(modifiedDailyNutritionLog));
+                return BadRequest(ModelState);
+            }
+
+            if (!_claimsManager.VerifyUserId(userId) || !_claimsManager.VerifyUserId(modifiedDailyNutritionLog.UserId))
+            {
+                return Forbid();
+            }
+
+            DailyNutritionLog target = await _context
+                .DailyNutritionLogs
+                .Where(_ => _.DailyNutritionLogId == modifiedDailyNutritionLog.DailyNutritionLogId)
+                .FirstOrDefaultAsync();
+
+            if (target == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                target.NutritionLogDate = modifiedDailyNutritionLog.NutritionLogDate;
+                target.FoodEntries = modifiedDailyNutritionLog.FoodEntries;
+
+                await _context.SaveChangesAsync();
+                return Ok(target);
+            }
         }
 
         [HttpDelete("{dailyNutritionLogId}")]
         [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int userId, [FromRoute] int dailyNutritionLogId)
         {
-            return Ok();
+            _claimsManager.Init(HttpContext.User);
+
+            if (!_claimsManager.VerifyUserId(userId))
+            {
+                return Forbid();
+            }
+
+            var target = await _context
+                .DailyNutritionLogs
+                .Where(_ => _.DailyNutritionLogId == dailyNutritionLogId)
+                .FirstOrDefaultAsync();
+
+            if (target == null)
+            {
+                return NotFound();
+            }
+
+            if (!_claimsManager.VerifyUserId(target.UserId))
+            {
+                return Forbid();
+            }
+
+            _context.Remove(target);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
